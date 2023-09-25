@@ -121,4 +121,24 @@ class LoginController extends Controller
 
         return new RedirectResponse($this->urlGenerator->getAbsoluteURL($redir));
     }
+
+    /**
+     * @PublicPage
+     *
+     * @NoCSRFRequired
+     *
+     * @UseSession
+     */
+    public function frontChannelLogout(string $sid, string $iss): RedirectResponse
+    {
+        $issuer = $this->config->getSystemValue('oidc_login_provider_url');
+        if ($iss !== $issuer)
+            \OC_Template::printErrorPage("Invalid issuer: $iss");
+        
+        if ($this->userSession->isLoggedIn())
+            $this->userSession->logout();
+        
+        $redir = $this->urlGenerator->getAbsoluteURL("/");
+        return new RedirectResponse($redir);
+    }
 }
